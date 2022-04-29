@@ -25,9 +25,9 @@ export const useSenior = () => {
             const todayEvents = clockingEvents.map(date => new Date(date)).sort().filter(date => date.toDateString() === day.toDateString())
             
             if (todayEvents.length % 2 !== 0) {
-                todayEvents.concat(new Date())
+                todayEvents.push(day)
             }
-            
+
             let elapsedTime = 0
             
             for (let i = 0; i < todayEvents.length; i = i + 2) {
