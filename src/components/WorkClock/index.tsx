@@ -1,12 +1,12 @@
-import { Center, Text } from "@chakra-ui/react"
-import { useSeniorContext } from "../../hooks/useSenior"
+import { Center, Text } from '@chakra-ui/react'
+import { useSeniorContext } from '../../hooks/useSenior'
 
 export const WorkClock = () => {
-    const { todayWorkingHours } = useSeniorContext()
+  const { todayWorkingHours } = useSeniorContext()
 
-    return <Center>
-        <Text fontSize="9xl">
-            {todayWorkingHours()}
-        </Text>
+  return (
+    <Center>
+      <Text fontSize="9xl">{todayWorkingHours()}</Text>
     </Center>
+  )
 }
