@@ -8,11 +8,11 @@ import {
 import { useSeniorContext } from '../../hooks/useSenior'
 
 export const TokenForm = () => {
-  const { setToken } = useSeniorContext()
+  const { saveToken } = useSeniorContext()
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event?.preventDefault()
-    setToken(event.currentTarget.token.value)
+    saveToken(event.currentTarget.token.value)
   }
 
   return (
