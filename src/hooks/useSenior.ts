@@ -34,11 +34,10 @@ export const useSenior = () => {
                 elapsedTime += ((todayEvents[i+1].getTime() - todayEvents[i].getTime()) / 1000)
             }
             
-            
             const hours = elapsedTime/ 60 / 60
             const minutes = (hours % 1) * 60
     
-            return `${Math.round(hours)}:${Math.round(minutes)}`
+            return `${Math.floor(hours)}:${Math.round(minutes)}`
         }
 
         return 'No data'
