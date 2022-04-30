@@ -28,8 +28,7 @@
     "plugins": [
       "react",
       "react-hooks",
-      "@typescript-eslint",
-      "unused-imports"
+      "@typescript-eslint"
     ],
     "rules": {
       "react-hooks/rules-of-hooks": "error",
@@ -51,7 +50,6 @@
           "argsIgnorePattern": "^_"
         }
       ],
-      "unused-imports/no-unused-imports": "error",
       "sort-imports": [
         "error",
         {
