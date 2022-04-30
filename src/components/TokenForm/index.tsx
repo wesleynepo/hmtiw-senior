@@ -17,11 +17,15 @@ export const TokenForm = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <FormControl>
-        <FormLabel htmlFor="token">Token de autenticação</FormLabel>
+      <FormControl textAlign="center">
+        <FormLabel htmlFor="token" fontWeight="bold">
+          Token de autenticação
+        </FormLabel>
         <Input placeholder="Token" id="token" required />
         <FormHelperText>Token obtido no login na Senior</FormHelperText>
-        <Button type="submit">Gravar</Button>
+        <Button type="submit" mt="4" width="100%">
+          Continuar
+        </Button>
       </FormControl>
     </form>
   )

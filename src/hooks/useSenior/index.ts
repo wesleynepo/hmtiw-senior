@@ -1,8 +1,9 @@
 import { AxiosError } from 'axios'
 import { useContext, useEffect, useState } from 'react'
-import { SeniorContext } from '../contexts/SeniorContext'
-import { clockingEventByActiveUserQuery } from '../services/senior'
-import { getTokenCookie, setTokenCookie } from '../utils/token'
+import { SeniorContext } from '../../contexts/SeniorContext'
+import { clockingEventByActiveUserQuery } from '../../services/senior'
+import { getTokenCookie, setTokenCookie } from '../../utils/token'
+import { WorkingHours } from './types'
 
 export const useSeniorContext = () => useContext(SeniorContext)!
 
@@ -19,8 +20,9 @@ export const useSenior = () => {
     setClockingEvents(clockingEvents)
   }
 
-  const todayWorkingHours = (): string => {
+  const todayWorkingHours = (): WorkingHours => {
     const day = new Date()
+    let open = false
 
     const todayEvents = clockingEvents
       .map((date) => new Date(date))
@@ -28,10 +30,11 @@ export const useSenior = () => {
       .filter((date) => date.toDateString() === day.toDateString())
 
     if (todayEvents.length === 0) {
-      return 'No events'
+      return { hours: 0, minutes: 0, open }
     }
 
     if (todayEvents.length % 2 !== 0) {
+      open = true
       todayEvents.push(day)
     }
 
@@ -45,7 +48,7 @@ export const useSenior = () => {
     const hours = elapsedTime / 60 / 60
     const minutes = (hours % 1) * 60
 
-    return `${Math.floor(hours)}:${Math.round(minutes)}`
+    return { hours: Math.floor(hours), minutes: Math.round(minutes), open }
   }
 
   const saveToken = (token: string) => {
