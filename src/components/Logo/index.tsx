@@ -1,3 +1,3 @@
 import { Text } from '@chakra-ui/react'
 
-export const Logo = () => <Text fontWeight="bold">HWTIW Senior</Text>
+export const Logo = () => <Text fontWeight="bold">HMTIW Senior</Text>
