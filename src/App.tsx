@@ -1,12 +1,19 @@
 import { TokenForm } from './components/TokenForm'
-import { Center } from '@chakra-ui/react'
+import { Center, VStack } from '@chakra-ui/react'
 import { useSeniorContext } from './hooks/useSenior'
 import { WorkClock } from './components/WorkClock'
+import { MonthEventTable } from './components/MonthEventTable'
 
 function App() {
   const { token } = useSeniorContext()
 
-  if (token) return <WorkClock />
+  if (token)
+    return (
+      <VStack spacing="100">
+        <WorkClock />
+        <MonthEventTable />
+      </VStack>
+    )
 
   return (
     <div>

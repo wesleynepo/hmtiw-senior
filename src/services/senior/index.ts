@@ -8,7 +8,7 @@ const requiredBody = {
     activePlatformUser: true,
     pageInfo: {
       page: 0,
-      pageSize: '15'
+      pageSize: '100'
     },
     nameSearch: '',
     sort: {

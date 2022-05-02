@@ -20,35 +20,67 @@ export const useSenior = () => {
     setClockingEvents(clockingEvents)
   }
 
-  const todayWorkingHours = (): WorkingHours => {
-    const day = new Date()
+  const timefy = (events: Date[], day: Date) => {
     let open = false
 
-    const todayEvents = clockingEvents
-      .map((date) => new Date(date))
-      .sort()
-      .filter((date) => date.toDateString() === day.toDateString())
-
-    if (todayEvents.length === 0) {
+    if (events.length === 0) {
       return { hours: 0, minutes: 0, open }
     }
 
-    if (todayEvents.length % 2 !== 0) {
+    if (events.length % 2 !== 0) {
       open = true
-      todayEvents.push(day)
+      events.push(day)
     }
 
     let elapsedTime = 0
 
-    for (let i = 0; i < todayEvents.length; i = i + 2) {
-      elapsedTime +=
-        (todayEvents[i + 1].getTime() - todayEvents[i].getTime()) / 1000
+    for (let i = 0; i < events.length; i = i + 2) {
+      elapsedTime += (events[i + 1].getTime() - events[i].getTime()) / 1000
     }
 
     const hours = elapsedTime / 60 / 60
     const minutes = (hours % 1) * 60
 
     return { hours: Math.floor(hours), minutes: Math.round(minutes), open }
+  }
+
+  const todayWorkingHours = (): WorkingHours => {
+    const day = new Date()
+
+    const todayEvents = clockingEvents
+      .map((date) => new Date(date))
+      .sort()
+      .filter((date) => date.toDateString() === day.toDateString())
+
+    return timefy(todayEvents, day)
+  }
+
+  const monthlyReport = () => {
+    const today = new Date()
+    const days: Date[][] = Array.from(Array(today.getDate())).map(
+      () => new Array(0)
+    )
+
+    const dates = clockingEvents
+      .map((date) => new Date(date))
+      .sort()
+      .filter((date) => date.getMonth() === today.getMonth())
+
+    dates.forEach((date) => {
+      days[date.getDate() - 1].push(date)
+    })
+
+    return days.map((day, index) => {
+      const timestamps = day
+        .map((date) => date.toLocaleTimeString('en-GB'))
+        .join('  ')
+
+      return {
+        timestamps,
+        totalHours: timefy(day, new Date()),
+        date: index + 1
+      }
+    })
   }
 
   const saveToken = (token: string) => {
@@ -75,6 +107,7 @@ export const useSenior = () => {
     setToken,
     clockingEvents,
     todayWorkingHours,
+    monthlyReport,
     saveToken
   }
 }
