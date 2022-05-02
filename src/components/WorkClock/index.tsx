@@ -11,7 +11,7 @@ export const WorkClock = () => {
     <Center>
       <Text
         fontSize="9xl"
-        color={hours > 8 ? 'green.400' : 'red.400'}
+        color={hours >= 8 ? 'green.400' : 'red.400'}
       >{`${format(hours)}:${format(minutes)}`}</Text>
     </Center>
   )

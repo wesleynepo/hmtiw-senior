@@ -17,7 +17,7 @@ export const MonthEventTable = () => {
   const data = monthlyReport()
 
   const colorRule = (open: boolean, hours: number) =>
-    !open && hours > 8 ? 'green.400' : 'red.400'
+    !open && hours >= 8 ? 'green.400' : 'red.400'
 
   const f = (number: number) => number.toString().padStart(2, '0')
 
