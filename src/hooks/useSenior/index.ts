@@ -41,7 +41,7 @@ export const useSenior = () => {
     const hours = elapsedTime / 60 / 60
     const minutes = (hours % 1) * 60
 
-    return { hours: Math.floor(hours), minutes: Math.round(minutes), open }
+    return { hours: Math.floor(hours), minutes: Math.floor(minutes), open }
   }
 
   const todayWorkingHours = (): WorkingHours => {
