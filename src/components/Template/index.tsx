@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 import { Logo } from '../Logo'
 import { ToggleButton } from '../ToggleButton'
 import { motion } from 'framer-motion'
+import { ForkMe } from 'fork-me-corner'
 
 export type TemplateProps = {
   children?: ReactNode
@@ -10,10 +11,15 @@ export type TemplateProps = {
 
 export const Template = ({ children }: TemplateProps) => (
   <VStack>
-    <HStack mt="1rem" justifyContent="space-between" width="90%">
+    <HStack
+      mt="1rem"
+      justifyContent="space-between"
+      width={{ base: '50%', md: '90%' }}
+    >
       <Logo />
       <ToggleButton />
     </HStack>
+    <ForkMe repo="https://github.com/wesleynepo/hmtiw-senior" />
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

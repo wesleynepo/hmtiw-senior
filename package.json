@@ -16,6 +16,7 @@
     "@emotion/styled": "^11",
     "axios": "^0.27.2",
     "emotion-theming": "^11.0.0",
+    "fork-me-corner": "^1.0.1",
     "framer-motion": "^6",
     "js-cookie": "^3.0.1",
     "react": "^18.0.0",
