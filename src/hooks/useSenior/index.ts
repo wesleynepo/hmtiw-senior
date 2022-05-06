@@ -2,22 +2,37 @@ import { AxiosError } from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import { SeniorContext } from '../../contexts/SeniorContext'
 import { clockingEventByActiveUserQuery } from '../../services/senior'
-import { getTokenCookie, setTokenCookie } from '../../utils/token'
+import {
+  getTokenCookie,
+  removeTokenCookie,
+  setTokenCookie
+} from '../../utils/token'
 import { WorkingHours } from './types'
+import { useNotify } from '../useNotify'
 
 export const useSeniorContext = () => useContext(SeniorContext)!
 
 export const useSenior = () => {
-  const [token, setToken] = useState('')
   const [clockingEvents, setClockingEvents] = useState<string[]>([])
-  const loadClockingEvents = async () => {
-    const clockingEvents = await clockingEventByActiveUserQuery(token)
+  const [loading, setLoading] = useState(false)
+  const [token, setToken] = useState('')
+  const { requestWarning, tokenError } = useNotify()
 
-    if (clockingEvents instanceof AxiosError) {
-      return
+  const loadClockingEvents = async () => {
+    setLoading(true)
+    const data = await clockingEventByActiveUserQuery(token)
+    setLoading(false)
+
+    if (data instanceof AxiosError) {
+      if (data.response?.status === 401) {
+        setToken('')
+        removeTokenCookie()
+        return tokenError()
+      }
+      return requestWarning()
     }
 
-    setClockingEvents(clockingEvents)
+    setClockingEvents(data)
   }
 
   const timefy = (events: Date[], day: Date) => {
@@ -108,6 +123,7 @@ export const useSenior = () => {
     clockingEvents,
     todayWorkingHours,
     monthlyReport,
-    saveToken
+    saveToken,
+    loading
   }
 }

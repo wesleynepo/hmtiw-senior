@@ -1,11 +1,18 @@
 import { TokenForm } from './components/TokenForm'
-import { Center, VStack } from '@chakra-ui/react'
+import { Center, Spinner, VStack } from '@chakra-ui/react'
 import { useSeniorContext } from './hooks/useSenior'
 import { WorkClock } from './components/WorkClock'
 import { MonthEventTable } from './components/MonthEventTable'
 
 function App() {
-  const { token } = useSeniorContext()
+  const { token, loading } = useSeniorContext()
+
+  if (loading)
+    return (
+      <Center mt="50%">
+        <Spinner />
+      </Center>
+    )
 
   if (token)
     return (
@@ -16,14 +23,9 @@ function App() {
     )
 
   return (
-    <div>
-      <header>
-        <Center mt="10%">
-          <TokenForm />
-        </Center>
-        {token}
-      </header>
-    </div>
+    <Center mt="10%">
+      <TokenForm />
+    </Center>
   )
 }
 
