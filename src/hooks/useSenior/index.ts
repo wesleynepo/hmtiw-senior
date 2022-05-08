@@ -9,6 +9,7 @@ import {
 } from '../../utils/token'
 import { WorkingHours } from './types'
 import { useNotify } from '../useNotify'
+import { timeSpent } from '../../utils/hours'
 
 export const useSeniorContext = () => useContext(SeniorContext)!
 
@@ -35,30 +36,6 @@ export const useSenior = () => {
     setClockingEvents(data)
   }
 
-  const timefy = (events: Date[], day: Date) => {
-    let open = false
-
-    if (events.length === 0) {
-      return { hours: 0, minutes: 0, open }
-    }
-
-    if (events.length % 2 !== 0) {
-      open = true
-      events.push(day)
-    }
-
-    let elapsedTime = 0
-
-    for (let i = 0; i < events.length; i = i + 2) {
-      elapsedTime += (events[i + 1].getTime() - events[i].getTime()) / 1000
-    }
-
-    const hours = elapsedTime / 60 / 60
-    const minutes = (hours % 1) * 60
-
-    return { hours: Math.floor(hours), minutes: Math.floor(minutes), open }
-  }
-
   const todayWorkingHours = (): WorkingHours => {
     const day = new Date()
 
@@ -67,7 +44,7 @@ export const useSenior = () => {
       .sort()
       .filter((date) => date.toDateString() === day.toDateString())
 
-    return timefy(todayEvents, day)
+    return timeSpent(todayEvents)
   }
 
   const monthlyReport = () => {
@@ -92,7 +69,7 @@ export const useSenior = () => {
 
       return {
         timestamps,
-        totalHours: timefy(day, new Date()),
+        totalHours: timeSpent(day),
         date: index + 1
       }
     })
