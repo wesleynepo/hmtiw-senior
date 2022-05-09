@@ -1,18 +1,43 @@
-import { Center, Text } from '@chakra-ui/react'
+import { Center, HStack, Text } from '@chakra-ui/react'
+import { motion } from 'framer-motion'
 import { useSeniorContext } from '../../hooks/useSenior'
 
 export const WorkClock = () => {
-  const { todayWorkingHours } = useSeniorContext()
-  const { hours, minutes } = todayWorkingHours()
+  const {
+    todayWorkingHours: { hours, minutes, open }
+  } = useSeniorContext()
 
-  const format = (number: number) => number.toString().padStart(2, '0')
+  const percent = (Number(hours) / 9) * 100
+
+  const gradientProps = {
+    background: `linear-gradient(#6be585, ${percent}%, #dd3e54)`,
+    backgroundClip: 'text'
+  }
 
   return (
     <Center>
-      <Text
-        fontSize="9xl"
-        color={hours >= 8 ? 'green.400' : 'red.400'}
-      >{`${format(hours)}:${format(minutes)}`}</Text>
+      <HStack fontSize="9xl" as="div" alignItems="center" {...gradientProps}>
+        <Text>{hours}</Text>
+        <motion.div
+          animate={
+            open
+              ? {
+                  opacity: [1, 0],
+                  borderRadius: ['20%', '20%', '50%', '50%', '20%']
+                }
+              : {}
+          }
+          transition={{
+            duration: 1.5,
+            ease: 'easeInOut',
+            repeat: Infinity,
+            repeatType: 'loop'
+          }}
+        >
+          <Text {...gradientProps}>:</Text>
+        </motion.div>
+        <Text>{minutes}</Text>
+      </HStack>
     </Center>
   )
 }

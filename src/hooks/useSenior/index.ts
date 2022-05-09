@@ -7,13 +7,14 @@ import {
   removeTokenCookie,
   setTokenCookie
 } from '../../utils/token'
-import { WorkingHours } from './types'
 import { useNotify } from '../useNotify'
+import { timeSpent } from '../../utils/hours'
 
 export const useSeniorContext = () => useContext(SeniorContext)!
 
 export const useSenior = () => {
-  const [clockingEvents, setClockingEvents] = useState<string[]>([])
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [clockingEvents, setClockingEvents] = useState<Date[]>([])
   const [loading, setLoading] = useState(false)
   const [token, setToken] = useState('')
   const { requestWarning, tokenError } = useNotify()
@@ -21,9 +22,9 @@ export const useSenior = () => {
   const loadClockingEvents = async () => {
     setLoading(true)
     const data = await clockingEventByActiveUserQuery(token)
-    setLoading(false)
 
     if (data instanceof AxiosError) {
+      setLoading(false)
       if (data.response?.status === 401) {
         setToken('')
         removeTokenCookie()
@@ -32,43 +33,16 @@ export const useSenior = () => {
       return requestWarning()
     }
 
-    setClockingEvents(data)
+    setClockingEvents(data.sort())
+    setLoading(false)
   }
 
-  const timefy = (events: Date[], day: Date) => {
-    let open = false
-
-    if (events.length === 0) {
-      return { hours: 0, minutes: 0, open }
-    }
-
-    if (events.length % 2 !== 0) {
-      open = true
-      events.push(day)
-    }
-
-    let elapsedTime = 0
-
-    for (let i = 0; i < events.length; i = i + 2) {
-      elapsedTime += (events[i + 1].getTime() - events[i].getTime()) / 1000
-    }
-
-    const hours = elapsedTime / 60 / 60
-    const minutes = (hours % 1) * 60
-
-    return { hours: Math.floor(hours), minutes: Math.floor(minutes), open }
-  }
-
-  const todayWorkingHours = (): WorkingHours => {
-    const day = new Date()
-
-    const todayEvents = clockingEvents
-      .map((date) => new Date(date))
-      .sort()
-      .filter((date) => date.toDateString() === day.toDateString())
-
-    return timefy(todayEvents, day)
-  }
+  const todayWorkingHours = timeSpent(
+    clockingEvents.filter(
+      (date) => date.toDateString() === new Date().toDateString()
+    ),
+    currentDate
+  )
 
   const monthlyReport = () => {
     const today = new Date()
@@ -76,10 +50,9 @@ export const useSenior = () => {
       () => new Array(0)
     )
 
-    const dates = clockingEvents
-      .map((date) => new Date(date))
-      .sort()
-      .filter((date) => date.getMonth() === today.getMonth())
+    const dates = clockingEvents.filter(
+      (date) => date.getMonth() === today.getMonth()
+    )
 
     dates.forEach((date) => {
       days[date.getDate() - 1].push(date)
@@ -92,7 +65,7 @@ export const useSenior = () => {
 
       return {
         timestamps,
-        totalHours: timefy(day, new Date()),
+        totalHours: timeSpent(day),
         date: index + 1
       }
     })
@@ -106,16 +79,28 @@ export const useSenior = () => {
   useEffect(() => {
     const token = getTokenCookie()
 
-    if (token) {
-      setToken(token)
-    }
-  })
+    if (token) setToken(token)
+  }, [])
 
   useEffect(() => {
-    if (token) {
-      loadClockingEvents()
-    }
+    if (token) loadClockingEvents()
   }, [token])
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentDate(new Date())
+    }, 60000)
+
+    return () => clearInterval(intervalId)
+  }, [])
+
+  useEffect(() => {
+    const { open, hours, minutes } = todayWorkingHours
+
+    if (open) {
+      document.title = `HMTIW Senior (${hours}:${minutes})`
+    }
+  }, [todayWorkingHours, currentDate])
 
   return {
     token,

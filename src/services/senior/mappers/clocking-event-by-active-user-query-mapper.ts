@@ -2,8 +2,8 @@ import { ClockingEventByActiveUserQueryResponse } from '../dtos/clocking-event-b
 
 export const mapClockingEventByActiveUserQuery = (
   data: ClockingEventByActiveUserQueryResponse
-): string[] => {
+) => {
   return data.result.map(
-    (clocking) => clocking.dateEvent + ' ' + clocking.timeEvent
+    (clocking) => new Date(clocking.dateEvent + 'T' + clocking.timeEvent)
   )
 }
