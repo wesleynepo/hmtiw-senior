@@ -1,13 +1,15 @@
+import { twoDigits } from '../format'
+
 const isOdd = (value: number) => value % 2 !== 0
 
-export const timeSpent = (events: Date[]) => {
+export const timeSpent = (events: Date[], currentDate?: Date) => {
   const open = isOdd(events.length)
 
   if (events.length === 0) {
-    return { hours: 0, minutes: 0, open }
+    return { hours: twoDigits(0), minutes: twoDigits(0), open }
   }
 
-  if (open) events.push(new Date())
+  if (open) events.push(currentDate ?? new Date())
 
   let time = 0
 
@@ -18,5 +20,9 @@ export const timeSpent = (events: Date[]) => {
   const hours = time / 3600
   const minutes = (hours % 1) * 60
 
-  return { hours: Math.floor(hours), minutes: Math.floor(minutes), open }
+  return {
+    hours: twoDigits(Math.floor(hours)),
+    minutes: twoDigits(Math.floor(minutes)),
+    open
+  }
 }
