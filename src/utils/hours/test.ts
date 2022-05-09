@@ -6,7 +6,7 @@ describe('hours', () => {
   })
 
   it('should return empty hours and minutes when empty events ', () => {
-    expect(timeSpent([])).toEqual({ hours: 0, minutes: 0, open: false })
+    expect(timeSpent([])).toEqual({ hours: '00', minutes: '00', open: false })
   })
 
   it('should calculate the time between two dates correctly', () => {
@@ -15,7 +15,11 @@ describe('hours', () => {
       new Date('2022-05-08T05:25:00.000Z')
     ]
 
-    expect(timeSpent(dates)).toEqual({ hours: 1, minutes: 10, open: false })
+    expect(timeSpent(dates)).toEqual({
+      hours: '01',
+      minutes: '10',
+      open: false
+    })
   })
 
   it('should calculate when one event and consider open', () => {
@@ -24,6 +28,6 @@ describe('hours', () => {
 
     const dates = [new Date('2022-05-08T04:15:00.000Z')]
 
-    expect(timeSpent(dates)).toEqual({ hours: 1, minutes: 10, open: true })
+    expect(timeSpent(dates)).toEqual({ hours: '01', minutes: '10', open: true })
   })
 })

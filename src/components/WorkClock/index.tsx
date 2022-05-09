@@ -7,7 +7,7 @@ export const WorkClock = () => {
     todayWorkingHours: { hours, minutes, open }
   } = useSeniorContext()
 
-  const percent = (hours / 9) * 100
+  const percent = (Number(hours) / 9) * 100
 
   const gradientProps = {
     background: `linear-gradient(#6be585, ${percent}%, #dd3e54)`,

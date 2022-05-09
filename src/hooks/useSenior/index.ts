@@ -80,7 +80,7 @@ export const useSenior = () => {
     const token = getTokenCookie()
 
     if (token) setToken(token)
-  })
+  }, [])
 
   useEffect(() => {
     if (token) loadClockingEvents()
