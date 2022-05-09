@@ -17,7 +17,7 @@ export const WorkClock = () => {
   return (
     <Center>
       <HStack fontSize="9xl" as="div" alignItems="center" {...gradientProps}>
-        <Text>{hours}</Text>
+        <Text {...gradientProps}>{hours}</Text>
         <motion.div
           animate={
             open
@@ -36,7 +36,7 @@ export const WorkClock = () => {
         >
           <Text {...gradientProps}>:</Text>
         </motion.div>
-        <Text>{minutes}</Text>
+        <Text {...gradientProps}>{minutes}</Text>
       </HStack>
     </Center>
   )
