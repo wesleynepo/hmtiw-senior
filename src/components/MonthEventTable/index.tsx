@@ -10,10 +10,10 @@ import {
   Th,
   Thead,
   Tr,
-  VStack
+  VStack,
+  useBreakpointValue
 } from '@chakra-ui/react'
 import { useSeniorContext } from '../../hooks/useSenior'
-import { useBreakpointValue } from '@chakra-ui/react'
 
 export const MonthEventTable = () => {
   const { monthlyReport } = useSeniorContext()
