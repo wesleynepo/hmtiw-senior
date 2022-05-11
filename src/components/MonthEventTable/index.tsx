@@ -18,7 +18,7 @@ import { useBreakpointValue } from '@chakra-ui/react'
 export const MonthEventTable = () => {
   const { monthlyReport } = useSeniorContext()
   const data = monthlyReport()
-  const isMobile: boolean = useBreakpointValue({ base: true, md: false })
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   const colorRule = (open: boolean, hours: string) =>
     !open && Number(hours) >= 8 ? 'green.400' : 'red.400'
