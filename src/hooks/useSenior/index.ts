@@ -61,7 +61,6 @@ export const useSenior = () => {
     return days.map((day, index) => {
       const timestamps = day
         .map((date) => date.toLocaleTimeString('en-GB'))
-        .join('  ')
 
       return {
         timestamps,
