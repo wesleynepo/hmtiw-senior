@@ -1,5 +1,8 @@
 import { MonthEventTable } from '.'
 import { render, screen } from '@testing-library/react'
+import { useBreakpointValue } from '@chakra-ui/react'
+
+const mockedUseBreakpointValue = useBreakpointValue as jest.Mock<boolean>
 
 jest.mock('../../hooks/useSenior', () => {
   return {
@@ -15,6 +18,15 @@ jest.mock('../../hooks/useSenior', () => {
   }
 })
 
+jest.mock('@chakra-ui/react', () => {
+  const originalModule = jest.requireActual('@chakra-ui/react')
+
+  return {
+    ...originalModule,
+    useBreakpointValue: jest.fn()
+  }
+})
+
 describe('<MonthEventTable/>', () => {
   it('should show events clock correctly', () => {
     render(<MonthEventTable />)
@@ -25,39 +37,26 @@ describe('<MonthEventTable/>', () => {
   })
 
   it('should show dividers on desktop screen', () => {
-    jest.mock('@chakra-ui/react', () => {
-      const originalModule = jest.requireActual('@chakra-ui/react')
+    mockedUseBreakpointValue.mockReturnValue(false)
 
-      return {
-        ...originalModule,
-        useBreakpointValue: jest.fn().mockReturnValue(false)
-      }
-    })
-
-    const { container } = render(<MonthEventTable />)    
-
-    console.log(container.querySelector('table div.chakra-stack__divider')?.hasAttribute('hidden'));
-    return;
+    const { container } = render(<MonthEventTable />)
 
     expect(
-      container.querySelector('table div.chakra-stack__divider')
-    ).not
+      container
+        .querySelector('table div.chakra-stack__divider')
+        ?.hasAttribute('hidden')
+    ).toBeFalsy()
   })
 
-  // it('should show dividers on mobile screen', () => {
-  //   jest.mock('@chakra-ui/react', () => {
-  //     const originalModule = jest.requireActual('@chakra-ui/react')
+  it('should show dividers on mobile screen', () => {
+    mockedUseBreakpointValue.mockReturnValue(true)
 
-  //     return {
-  //       ...originalModule,
-  //       useBreakpointValue: true
-  //     }
-  //   })
+    const { container } = render(<MonthEventTable />)
 
-  //   const { container } = render(<MonthEventTable />)
-
-  //   expect(
-  //     container.getElementsByClassName('chakra-stack__divider').filter(element => element.).length
-  //   ).toHaveProperty('hidden')
-  // })
+    expect(
+      container
+        .querySelector('table div.chakra-stack__divider')
+        ?.hasAttribute('hidden')
+    ).toBeTruthy()
+  })
 })
