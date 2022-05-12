@@ -24,22 +24,25 @@ describe('<MonthEventTable/>', () => {
     expect(screen.queryByText('13:00:00')).toBeTruthy()
   })
 
-  // it('should show dividers on desktop screen', () => {
-  //   jest.mock('@chakra-ui/react', () => {
-  //     const originalModule = jest.requireActual('@chakra-ui/react')
+  it('should show dividers on desktop screen', () => {
+    jest.mock('@chakra-ui/react', () => {
+      const originalModule = jest.requireActual('@chakra-ui/react')
 
-  //     return {
-  //       ...originalModule,
-  //       useBreakpointValue: false
-  //     }
-  //   })
+      return {
+        ...originalModule,
+        useBreakpointValue: jest.fn().mockReturnValue(false)
+      }
+    })
 
-  //   const { container } = render(<MonthEventTable />)
+    const { container } = render(<MonthEventTable />)    
 
-  //   expect(
-  //     container.getElementsByClassName('chakra-stack__divider').length
-  //   ).toBeGreaterThan(1)
-  // })
+    console.log(container.querySelector('table div.chakra-stack__divider')?.hasAttribute('hidden'));
+    return;
+
+    expect(
+      container.querySelector('table div.chakra-stack__divider')
+    ).not
+  })
 
   // it('should show dividers on mobile screen', () => {
   //   jest.mock('@chakra-ui/react', () => {
