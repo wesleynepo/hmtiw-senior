@@ -1,4 +1,6 @@
 import {
+  Stack,
+  StackDivider,
   Table,
   TableCaption,
   TableContainer,
@@ -8,13 +10,15 @@ import {
   Th,
   Thead,
   Tr,
-  VStack
+  VStack,
+  useBreakpointValue
 } from '@chakra-ui/react'
 import { useSeniorContext } from '../../hooks/useSenior'
 
 export const MonthEventTable = () => {
   const { monthlyReport } = useSeniorContext()
   const data = monthlyReport()
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   const colorRule = (open: boolean, hours: string) =>
     !open && Number(hours) >= 8 ? 'green.400' : 'red.400'
@@ -40,7 +44,19 @@ export const MonthEventTable = () => {
                 <Tr key={date}>
                   <Td>{date}</Td>
                   <Td whiteSpace={{ base: 'break-spaces', md: 'normal' }}>
-                    {timestamps}
+                    <Stack
+                      direction={{ base: 'column', md: 'row' }}
+                      divider={
+                        <StackDivider
+                          borderColor="gray.200"
+                          hidden={isMobile}
+                        />
+                      }
+                    >
+                      {timestamps.map((timestamp) => (
+                        <Text key={timestamp}>{timestamp}</Text>
+                      ))}
+                    </Stack>
                   </Td>
                   <Td color={colorRule(open, hours)}>
                     {open ? 'Incompleto' : `${hours}:${minutes}`}
