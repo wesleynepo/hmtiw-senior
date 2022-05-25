@@ -1,4 +1,4 @@
-import { Center, HStack, VStack } from '@chakra-ui/react'
+import { Center, HStack, Link, Text, VStack } from '@chakra-ui/react'
 import { ReactNode } from 'react'
 import { Logo } from '../Logo'
 import { ToggleButton } from '../ToggleButton'
@@ -16,7 +16,13 @@ export const Template = ({ children }: TemplateProps) => (
       justifyContent="space-between"
       width={{ base: '50%', md: '90%' }}
     >
-      <Logo />
+      <HStack>
+        <Logo />
+        <Link href="/historico">
+          <Text>Histórico</Text>
+        </Link>
+      </HStack>
+
       <ToggleButton />
     </HStack>
     <ForkMe repo="https://github.com/wesleynepo/hmtiw-senior" />
