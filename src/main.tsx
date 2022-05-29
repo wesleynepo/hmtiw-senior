@@ -12,14 +12,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ChakraProvider>
       <SeniorContextProvider>
-        <Template>
-          <BrowserRouter>
+        <BrowserRouter>
+          <Template>
             <Routes>
               <Route path="/" element={<App />} />
               <Route path="/historico" element={<History />} />
             </Routes>
-          </BrowserRouter>
-        </Template>
+          </Template>
+        </BrowserRouter>
       </SeniorContextProvider>
     </ChakraProvider>
   </React.StrictMode>

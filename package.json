@@ -22,7 +22,7 @@
     "js-cookie": "^3.0.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-router-dom": "6"
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
     "@types/jest": "^27.5.0",

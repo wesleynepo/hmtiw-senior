@@ -4,7 +4,8 @@ import { useSeniorContext } from '../../hooks/useSenior'
 
 export const WorkClock = () => {
   const {
-    todayWorkingHours: { hours, minutes, open }
+    todayWorkingHours: { hours, minutes, open },
+    todayEvents
   } = useSeniorContext()
 
   const percent = (Number(hours) / 9) * 100
@@ -15,7 +16,7 @@ export const WorkClock = () => {
   }
 
   return (
-    <Center>
+    <Center flexDir="column">
       <HStack fontSize="9xl" as="div" alignItems="center" {...gradientProps}>
         <Text {...gradientProps}>{hours}</Text>
         <motion.div
@@ -38,6 +39,7 @@ export const WorkClock = () => {
         </motion.div>
         <Text {...gradientProps}>{minutes}</Text>
       </HStack>
+      <Text>{todayEvents}</Text>
     </Center>
   )
 }
