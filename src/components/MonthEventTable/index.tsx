@@ -18,7 +18,7 @@ export const MonthEventTable = ({ data }: MonthEventTableProps) => {
     !open && Number(hours) >= 8 ? 'green.400' : 'red.400'
 
   return (
-    <TableContainer>
+    <TableContainer width="full">
       <Table variant="striped">
         <Thead>
           <Tr>

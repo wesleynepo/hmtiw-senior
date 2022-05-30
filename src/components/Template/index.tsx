@@ -2,7 +2,6 @@ import { Center, HStack, Text, VStack } from '@chakra-ui/react'
 import { ReactNode } from 'react'
 import { Logo } from '../Logo'
 import { ToggleButton } from '../ToggleButton'
-import { motion } from 'framer-motion'
 import { ForkMe } from 'fork-me-corner'
 import { Link } from 'react-router-dom'
 
@@ -28,14 +27,7 @@ export const Template = ({ children }: TemplateProps) => {
         <ToggleButton />
       </HStack>
       <ForkMe repo="https://github.com/wesleynepo/hmtiw-senior" />
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        exit={{ opacity: 0 }}
-      >
-        <Center>{children}</Center>
-      </motion.div>
+      <Center width="full">{children}</Center>
     </VStack>
   )
 }
