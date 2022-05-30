@@ -1,8 +1,9 @@
+import { WorkingHours } from '../../hooks/useSenior/types'
 import { twoDigits } from '../format'
 
 const isOdd = (value: number) => value % 2 !== 0
 
-export const timeSpent = (events: Date[], currentDate?: Date) => {
+export const timeSpent = (events: Date[], currentDate?: Date): WorkingHours => {
   const open = isOdd(events.length)
 
   if (events.length === 0) {
@@ -25,4 +26,33 @@ export const timeSpent = (events: Date[], currentDate?: Date) => {
     minutes: twoDigits(Math.floor(minutes)),
     open
   }
+}
+
+export const monthEventsGroup = (clockingEvents: Date[]) => {
+  const today = new Date()
+  const days = Array.from({ length: 12 }, () =>
+    Array.from({ length: 31 }, () => new Array(0))
+  )
+
+  const dates = clockingEvents.filter(
+    (date) => date.getFullYear() === today.getFullYear()
+  )
+
+  dates.forEach((date) => {
+    days[date.getMonth()][date.getDate() - 1].push(date)
+  })
+
+  return days.map((month) => {
+    return month.map((day, index) => {
+      const timestamps = day
+        .map((date) => date.toLocaleTimeString('en-GB'))
+        .join('  ')
+
+      return {
+        timestamps,
+        totalHours: timeSpent(day),
+        date: index + 1
+      }
+    })
+  })
 }

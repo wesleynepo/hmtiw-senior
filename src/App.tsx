@@ -2,7 +2,7 @@ import { TokenForm } from './components/TokenForm'
 import { Center, Spinner, VStack } from '@chakra-ui/react'
 import { useSeniorContext } from './hooks/useSenior'
 import { WorkClock } from './components/WorkClock'
-import { MonthEventTable } from './components/MonthEventTable'
+import { motion } from 'framer-motion'
 
 function App() {
   const { token, loading } = useSeniorContext()
@@ -16,10 +16,16 @@ function App() {
 
   if (token)
     return (
-      <VStack spacing="100">
-        <WorkClock />
-        <MonthEventTable />
-      </VStack>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        exit={{ opacity: 0 }}
+      >
+        <VStack spacing="100">
+          <WorkClock />
+        </VStack>
+      </motion.div>
     )
 
   return (

@@ -8,7 +8,8 @@ import {
   setTokenCookie
 } from '../../utils/token'
 import { useNotify } from '../useNotify'
-import { timeSpent } from '../../utils/hours'
+import { monthEventsGroup, timeSpent } from '../../utils/hours'
+import { DailyData } from './types'
 
 export const useSeniorContext = () => useContext(SeniorContext)!
 
@@ -44,32 +45,12 @@ export const useSenior = () => {
     currentDate
   )
 
-  const monthlyReport = () => {
-    const today = new Date()
-    const days: Date[][] = Array.from(Array(today.getDate())).map(
-      () => new Array(0)
-    )
+  const monthlyReport: DailyData[][] = monthEventsGroup(clockingEvents)
 
-    const dates = clockingEvents.filter(
-      (date) => date.getMonth() === today.getMonth()
-    )
-
-    dates.forEach((date) => {
-      days[date.getDate() - 1].push(date)
-    })
-
-    return days.map((day, index) => {
-      const timestamps = day
-        .map((date) => date.toLocaleTimeString('en-GB'))
-        .join('  ')
-
-      return {
-        timestamps,
-        totalHours: timeSpent(day),
-        date: index + 1
-      }
-    })
-  }
+  const todayEvents = clockingEvents
+    .filter((date) => date.toDateString() === new Date().toDateString())
+    .map((date) => date.toLocaleTimeString('en-GB'))
+    .join('  ')
 
   const saveToken = (token: string) => {
     setToken(token)
@@ -107,6 +88,7 @@ export const useSenior = () => {
     setToken,
     clockingEvents,
     todayWorkingHours,
+    todayEvents,
     monthlyReport,
     saveToken,
     loading

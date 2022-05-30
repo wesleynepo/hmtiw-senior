@@ -1,5 +1,11 @@
 export type WorkingHours = {
-  hours: number
-  minutes: number
+  hours: string
+  minutes: string
   open: boolean
+}
+
+export type DailyData = {
+  timestamps: string
+  totalHours: WorkingHours
+  date: number
 }
