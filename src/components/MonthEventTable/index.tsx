@@ -10,15 +10,13 @@ import {
   Th,
   Thead,
   Tr,
-  VStack,
-  useBreakpointValue
+  VStack
 } from '@chakra-ui/react'
 import { useSeniorContext } from '../../hooks/useSenior'
 
 export const MonthEventTable = () => {
   const { monthlyReport } = useSeniorContext()
   const data = monthlyReport()
-  const isMobile = useBreakpointValue({ base: true, md: false })
 
   const colorRule = (open: boolean, hours: string) =>
     !open && Number(hours) >= 8 ? 'green.400' : 'red.400'
@@ -49,7 +47,8 @@ export const MonthEventTable = () => {
                       divider={
                         <StackDivider
                           borderColor="gray.200"
-                          hidden={isMobile}
+                          display={{ base: 'none', md: 'flex' }}
+                          data-testid="clock-event-divider"
                         />
                       }
                     >
