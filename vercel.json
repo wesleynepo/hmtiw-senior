@@ -1,8 +1,9 @@
 {
-    "rewrites": [
+    "routes": [
         {
-            "source": "/historico",
-            "destination": "/historico"
+            "src": "/[^.]+",
+            "dest": "/",
+            "status": 200
         }
     ]
 }
