@@ -12,9 +12,9 @@ export default defineConfig({
         enabled: true
       },
       includeAssets: [
-        '/src/icon.svg',
+        '/src/icon.png',
         '/src/apple-touch-icon.svg',
-        '/src/mask-icon.svg'
+        '/src/mask-icon.png'
       ],
       manifest: {
         name: 'HMTIW Senior',
@@ -23,9 +23,9 @@ export default defineConfig({
         theme_color: '#ffffff',
         icons: [
           {
-            src: '/src/icon.svg',
+            src: '/src/icon.png',
             sizes: '192x192',
-            type: 'image/svg'
+            type: 'image/png'
           },
           {
             src: '/src/mask-icon.png',
