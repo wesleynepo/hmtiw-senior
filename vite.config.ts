@@ -17,6 +17,9 @@ export default defineConfig({
         '/src/mask-icon.png'
       ],
       manifest: {
+        lang: 'pt-BR',
+        display: 'fullscreen',
+        orientation: 'portrait',
         name: 'HMTIW Senior',
         short_name: 'HMTIW',
         description: 'HMTIW Senior',
