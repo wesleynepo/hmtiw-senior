@@ -11,11 +11,7 @@ export default defineConfig({
       devOptions: {
         enabled: true
       },
-      includeAssets: [
-        '/src/icon.png',
-        '/src/apple-touch-icon.svg',
-        '/src/mask-icon.png'
-      ],
+      includeAssets: ['/icon.png', '/apple-touch-icon.svg', '/mask-icon.png'],
       manifest: {
         lang: 'pt-BR',
         display: 'fullscreen',
@@ -26,13 +22,13 @@ export default defineConfig({
         theme_color: '#ffffff',
         icons: [
           {
-            src: '/src/icon.png',
+            src: '/icon.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable'
           },
           {
-            src: '/src/mask-icon.png',
+            src: '/mask-icon.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
