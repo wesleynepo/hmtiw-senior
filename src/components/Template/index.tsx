@@ -26,7 +26,7 @@ export const Template = ({ children }: TemplateProps) => {
 
         <ToggleButton />
       </HStack>
-      <ForkMe repo="https://github.com/wesleynepo/hmtiw-senior" />
+      <ForkMe repo="https://github.com/dmsysop/hmtiw-senior" />
       <Center width="full">{children}</Center>
     </VStack>
   )
