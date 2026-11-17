@@ -5,7 +5,13 @@ export type WorkingHours = {
 }
 
 export type DailyData = {
-  timestamps: string
   totalHours: WorkingHours
   day: number
+  events: ClockingEvent[]
+}
+
+export type ClockingEvent = {
+  date: Date
+  latitude?: number
+  longitude?: number
 }

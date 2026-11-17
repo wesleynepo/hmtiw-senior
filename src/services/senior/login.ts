@@ -1,17 +1,17 @@
 import { AxiosError, AxiosResponse } from 'axios'
-import { axiosSeniorGetaway } from './axios-senior'
+import { axiosSenior } from './axios-senior'
 import { AuthCredentialRequest, AuthTokenResponse } from './dtos/auth-data'
 
-export const login = async (payload: AuthCredentialRequest) => {
+export const login = async ({ user, password }: AuthCredentialRequest) => {
   try {
     const {
-      data: { token }
-    } = await axiosSeniorGetaway.post<any, AxiosResponse<AuthTokenResponse>>(
-      'senior/login',
-      payload
+      data: { jsonToken }
+    } = await axiosSenior.post<any, AxiosResponse<AuthTokenResponse>>(
+      't/senior.com.br/bridge/1.0/rest/platform/authentication/actions/login',
+      { username: user, password }
     )
 
-    return token
+    return JSON.parse(jsonToken).access_token as string
   } catch (error) {
     return error as AxiosError
   }

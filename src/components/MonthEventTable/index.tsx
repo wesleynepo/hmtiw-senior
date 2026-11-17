@@ -1,13 +1,32 @@
 import {
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr
+  Badge,
+  Box,
+  Flex,
+  IconButton,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
+  Stat,
+  StatLabel,
+  StatNumber,
+  Text,
+  VStack,
+  Wrap,
+  WrapItem,
+  useColorModeValue
 } from '@chakra-ui/react'
+import { useState } from 'react'
 import { DailyData } from '../../hooks/useSenior/types'
+import { MapPinIcon, PunchMap, isLocated } from '../PunchMap'
+import {
+  minutesPerHour,
+  minutesToHoursAndMinutes,
+  summarizeDay
+} from './summarize'
 
 export type MonthEventTableProps = {
   data: DailyData[]
@@ -15,187 +34,198 @@ export type MonthEventTableProps = {
   month: number
 }
 
-let totalMinutesMonth = 0
-const expectedHoursPerDay = 8
-const minutesPerHour = 60
-const minutesTolerance = 10
+const formatTime = (date: Date) =>
+  date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 
-const withinTolerance = (hours: number, minutes: number) => {
-  return (
-    (hours === expectedHoursPerDay && minutes <= minutesTolerance) ||
-    (hours === expectedHoursPerDay - 1 &&
-      minutes >= minutesPerHour - minutesTolerance)
-  )
-}
-
-const belowExpected = (hours: number, minutes: number) => {
-  return (
-    hours < expectedHoursPerDay ||
-    (hours < expectedHoursPerDay && minutes < minutesPerHour - minutesTolerance)
-  )
-}
-
-const isSaturdayOrSunday = (year: number, month: number, day: number) => {
-  const date = new Date()
-  date.setFullYear(year, month, day)
-
-  const weekendDays = [
-    'Sunday',
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    'Saturday'
-  ]
-  const currentDayOfWeek = weekendDays[date.getDay()]
-
-  return !!currentDayOfWeek
-}
-
-const ajustTime = (time: string | number) => {
-  if (time < 10) {
-    return `0${Number(time)}`
-  }
-
-  return time
-}
-
-const calculateHoursDifference = (
-  year: number,
-  month: number,
-  day: number,
-  hours: string,
-  minutes: string
-) => {
-  const workedHours = Number(hours)
-  const workedMinutes = Number(minutes)
-
-  if (workedHours === 0 && workedMinutes === 0) {
-    return 'Folga'
-  }
-
-  if (isSaturdayOrSunday(year, month, day)) {
-    return `${hours}:${ajustTime(minutes)} (Extra)`
-  }
-
-  if (withinTolerance(workedHours, workedMinutes)) {
-    return '0'
-  }
-
-  const hoursDifference = workedHours - expectedHoursPerDay
-  const minutesDifference = minutesPerHour - workedMinutes
-
-  if (belowExpected(workedHours, workedMinutes)) {
-    let ajustHours: number | string = hoursDifference + 1
-    totalMinutesMonth = totalMinutesMonth - minutesDifference
-    totalMinutesMonth = totalMinutesMonth - ajustHours * minutesPerHour * -1
-    ajustHours = ajustHours < 0 ? ajustHours : `-${ajustHours}`
-
-    return `${ajustHours}:${ajustTime(minutesDifference)}`
-  }
-
-  if (hoursDifference === 0 && workedMinutes > minutesTolerance) {
-    totalMinutesMonth += workedMinutes
-
-    return `+0:${ajustTime(minutes)}`
-  }
-
-  totalMinutesMonth = totalMinutesMonth + workedMinutes
-  totalMinutesMonth = totalMinutesMonth + hoursDifference * minutesPerHour
-
-  return `+${hoursDifference}:${ajustTime(minutes)}`
-}
-
-const minutesToHoursAndMinutes = (totalMinutes: number) => {
-  if (totalMinutes < 0) {
-    totalMinutes = totalMinutes * -1
-  }
-
-  const hours = Math.floor(totalMinutes / minutesPerHour)
-  const minutes = totalMinutes % minutesPerHour
-
-  return `${hours}:${ajustTime(minutes)}`
-}
+// 'red.400' -> 'red', para usar como colorScheme
+const scheme = (color: string) => color.split('.')[0]
 
 export const MonthEventTable = ({
   data,
   year,
   month
 }: MonthEventTableProps) => {
-  totalMinutesMonth = 0
+  const [mapDay, setMapDay] = useState<DailyData | null>(null)
+  const cardBg = useColorModeValue('white', 'gray.700')
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const mutedColor = useColorModeValue('gray.500', 'gray.400')
 
-  const colorRule = (
-    open: boolean,
-    hours: string,
-    minutes: string,
-    day: number
-  ) => {
-    if (open) {
-      return 'red.400'
-    }
+  const today = new Date()
+  const isCurrentMonth =
+    year === today.getFullYear() && month === today.getMonth()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const lastDay = isCurrentMonth ? today.getDate() : daysInMonth
 
-    if (isSaturdayOrSunday(year, month, day)) {
-      return 'green.300'
-    }
+  // mais recente primeiro: é o que se procura com mais frequência
+  const days = data
+    .filter(({ day }) => day <= lastDay)
+    .map((dailyData) => ({
+      ...dailyData,
+      summary: summarizeDay(year, month, dailyData.day, dailyData.totalHours)
+    }))
+    .reverse()
 
-    const numberHours = Number(hours)
-    const numberMinutes = Number(minutes)
+  const balanceMinutes = days.reduce(
+    (total, { summary }) => total + summary.differenceMinutes,
+    0
+  )
+  const workedMinutes = days.reduce(
+    (total, { totalHours: { hours, minutes, open } }) =>
+      open ? total : total + Number(hours) * minutesPerHour + Number(minutes),
+    0
+  )
+  const workedDays = days.filter(({ events }) => events.length > 0).length
 
-    if (withinTolerance(numberHours, numberMinutes)) {
-      return 'blue.400'
-    }
-
-    if (belowExpected(numberHours, numberMinutes)) {
-      return 'red.400'
-    }
-
-    return 'green.400'
-  }
+  const stats = [
+    {
+      label: 'Trabalhado',
+      value: minutesToHoursAndMinutes(workedMinutes),
+      color: undefined
+    },
+    {
+      label: 'Saldo',
+      value:
+        (balanceMinutes < 0 ? '-' : '+') +
+        minutesToHoursAndMinutes(balanceMinutes),
+      color: balanceMinutes < 0 ? 'red.400' : 'green.400'
+    },
+    { label: 'Dias', value: String(workedDays), color: undefined }
+  ]
 
   return (
-    <TableContainer width="full">
-      <Table variant="striped">
-        <Thead>
-          <Tr>
-            <Th>Dia</Th>
-            <Th>Registros</Th>
-            <Th isNumeric>Total</Th>
-            <Th isNumeric>Diferença</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {data.map(
-            ({ day, timestamps, totalHours: { hours, open, minutes } }) => (
-              <Tr key={day}>
-                <Td>{day}</Td>
-                <Td whiteSpace={{ base: 'break-spaces', md: 'normal' }}>
-                  {timestamps}
-                </Td>
-                <Td color={colorRule(open, hours, minutes, day)} isNumeric>
-                  {open ? 'Incompleto' : `${hours}:${minutes}`}{' '}
-                </Td>
-                <Td color={colorRule(open, hours, minutes, day)} isNumeric>
-                  {!open &&
-                    calculateHoursDifference(year, month, day, hours, minutes)}
-                </Td>
-              </Tr>
-            )
-          )}
-          <Tr>
-            <Td colSpan={3} isNumeric>
-              Total
-            </Td>
-            <Td
-              color={totalMinutesMonth < 0 ? 'red.400' : 'green.400'}
-              isNumeric
-            >
-              {totalMinutesMonth < 0 ? '-' : '+'}
-              {minutesToHoursAndMinutes(totalMinutesMonth)}
-            </Td>
-          </Tr>
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <VStack width="full" spacing="3">
+      <SimpleGrid columns={3} spacing="3" width="full">
+        {stats.map(({ label, value, color }) => (
+          <Stat
+            key={label}
+            bg={cardBg}
+            borderWidth="1px"
+            borderColor={borderColor}
+            borderRadius="xl"
+            padding="3"
+            textAlign="center"
+          >
+            <StatLabel color={mutedColor}>{label}</StatLabel>
+            <StatNumber color={color} fontSize={{ base: 'xl', md: '2xl' }}>
+              {value}
+            </StatNumber>
+          </Stat>
+        ))}
+      </SimpleGrid>
+
+      {days.map((dailyData) => {
+        const {
+          day,
+          events,
+          summary,
+          totalHours: { hours, minutes, open }
+        } = dailyData
+        const date = new Date(year, month, day)
+        const isToday = isCurrentMonth && day === today.getDate()
+        const empty = events.length === 0
+
+        return (
+          <Flex
+            key={day}
+            width="full"
+            alignItems="center"
+            gap="3"
+            bg={cardBg}
+            borderWidth="1px"
+            borderColor={isToday ? 'green.400' : borderColor}
+            borderRadius="xl"
+            paddingX="3"
+            paddingY={empty ? '1' : '3'}
+            opacity={empty ? 0.6 : 1}
+          >
+            <VStack spacing="0" minW="10">
+              <Text fontSize={empty ? 'md' : 'xl'} fontWeight="bold">
+                {day}
+              </Text>
+              <Text fontSize="xs" color={mutedColor} textTransform="uppercase">
+                {date.toLocaleDateString('pt-BR', { weekday: 'short' })}
+              </Text>
+            </VStack>
+
+            <Box flex="1">
+              {empty ? (
+                <Text fontSize="sm" color={mutedColor}>
+                  {summary.differenceLabel || 'Sem registros'}
+                </Text>
+              ) : (
+                <Wrap spacing="1">
+                  {events.map((event, index) => (
+                    <WrapItem key={event.date.getTime()}>
+                      <Badge
+                        colorScheme={index % 2 === 0 ? 'green' : 'orange'}
+                        variant="subtle"
+                        borderRadius="full"
+                        paddingX="2"
+                        fontSize="sm"
+                        fontWeight="medium"
+                      >
+                        {formatTime(event.date)}
+                      </Badge>
+                    </WrapItem>
+                  ))}
+                </Wrap>
+              )}
+            </Box>
+
+            {!empty && (
+              <VStack spacing="1" alignItems="flex-end">
+                <Text fontWeight="bold" fontSize="lg">
+                  {hours}:{minutes}
+                </Text>
+                {open ? (
+                  <Badge colorScheme={isToday ? 'blue' : 'red'}>
+                    {isToday ? 'Em andamento' : 'Incompleto'}
+                  </Badge>
+                ) : (
+                  <Badge colorScheme={scheme(summary.color)}>
+                    {summary.differenceLabel}
+                  </Badge>
+                )}
+              </VStack>
+            )}
+
+            {events.some(isLocated) && (
+              <IconButton
+                aria-label={`Ver no mapa as batidas do dia ${day}`}
+                title="Ver no mapa"
+                size="sm"
+                variant="ghost"
+                colorScheme="green"
+                icon={<MapPinIcon />}
+                onClick={() => setMapDay(dailyData)}
+              />
+            )}
+          </Flex>
+        )
+      })}
+
+      <Modal
+        isOpen={mapDay !== null}
+        onClose={() => setMapDay(null)}
+        size="xl"
+        isCentered
+      >
+        <ModalOverlay backdropFilter="blur(2px)" />
+        <ModalContent marginX="4">
+          <ModalHeader textTransform="capitalize">
+            {mapDay &&
+              new Date(year, month, mapDay.day).toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+              })}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody paddingBottom="6">
+            {mapDay && <PunchMap key={mapDay.day} events={mapDay.events} />}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </VStack>
   )
 }

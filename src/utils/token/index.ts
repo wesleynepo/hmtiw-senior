@@ -2,7 +2,11 @@ import Cookie from 'js-cookie'
 const tokenLocalKey = 'token-senior'
 
 export const setTokenCookie = (token: string) => {
-  Cookie.set(tokenLocalKey, token, { expires: 365 })
+  Cookie.set(tokenLocalKey, token, {
+    expires: 1,
+    secure: location.protocol === 'https:',
+    sameSite: 'strict'
+  })
 }
 
 export const getTokenCookie = () => {
