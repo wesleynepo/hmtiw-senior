@@ -4,5 +4,5 @@ export type AuthCredentialRequest = {
 }
 
 export type AuthTokenResponse = {
-  token: string
+  jsonToken: string
 }

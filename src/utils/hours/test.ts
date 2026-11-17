@@ -1,10 +1,6 @@
 import { timeSpent } from '.'
 
 describe('hours', () => {
-  afterAll(() => {
-    jest.useRealTimers()
-  })
-
   it('should return empty hours and minutes when empty events ', () => {
     expect(timeSpent([])).toEqual({ hours: '00', minutes: '00', open: false })
   })
@@ -23,11 +19,19 @@ describe('hours', () => {
   })
 
   it('should calculate when one event and consider open', () => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2022-05-08T05:25:00.000Z'))
-
     const dates = [new Date('2022-05-08T04:15:00.000Z')]
 
-    expect(timeSpent(dates)).toEqual({ hours: '01', minutes: '10', open: true })
+    expect(timeSpent(dates, new Date('2022-05-08T05:25:00.000Z'))).toEqual({
+      hours: '01',
+      minutes: '10',
+      open: true
+    })
+  })
+
+  it('should not mutate the events it receives', () => {
+    const dates = [new Date('2022-05-08T04:15:00.000Z')]
+    timeSpent(dates, new Date('2022-05-08T05:25:00.000Z'))
+
+    expect(dates).toHaveLength(1)
   })
 })

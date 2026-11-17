@@ -2,10 +2,11 @@ import { AuthForm } from './components/AuthForm'
 import { Center, Spinner, VStack } from '@chakra-ui/react'
 import { useSeniorContext } from './hooks/useSenior'
 import { WorkClock } from './components/WorkClock'
+import { PunchMap } from './components/PunchMap'
 import { motion } from 'framer-motion'
 
 function App() {
-  const { token, loading } = useSeniorContext()
+  const { token, loading, todayClockingEvents } = useSeniorContext()
 
   if (loading)
     return (
@@ -22,8 +23,9 @@ function App() {
         transition={{ delay: 0.1 }}
         exit={{ opacity: 0 }}
       >
-        <VStack spacing="100">
+        <VStack spacing="10" paddingBottom="10">
           <WorkClock />
+          <PunchMap events={todayClockingEvents} />
         </VStack>
       </motion.div>
     )

@@ -1,4 +1,4 @@
-import { WorkingHours } from '../../hooks/useSenior/types'
+import { ClockingEvent, WorkingHours } from '../../hooks/useSenior/types'
 import { twoDigits } from '../format'
 
 const isOdd = (value: number) => value % 2 !== 0
@@ -10,12 +10,12 @@ export const timeSpent = (events: Date[], currentDate?: Date): WorkingHours => {
     return { hours: twoDigits(0), minutes: twoDigits(0), open }
   }
 
-  if (open) events.push(currentDate ?? new Date())
+  const pairs = open ? [...events, currentDate ?? new Date()] : events
 
   let time = 0
 
-  for (let i = 0; i < events.length; i = i + 2) {
-    time += (events[i + 1].getTime() - events[i].getTime()) / 1000
+  for (let i = 0; i < pairs.length; i = i + 2) {
+    time += (pairs[i + 1].getTime() - pairs[i].getTime()) / 1000
   }
 
   const hours = time / 3600
@@ -28,27 +28,26 @@ export const timeSpent = (events: Date[], currentDate?: Date): WorkingHours => {
   }
 }
 
-export const monthEventsGroup = (clockingEvents: Date[], year: number) => {
+export const monthEventsGroup = (
+  clockingEvents: ClockingEvent[],
+  year: number
+) => {
   const days = Array.from({ length: 12 }, () =>
-    Array.from({ length: 31 }, () => new Array(0))
+    Array.from({ length: 31 }, (): ClockingEvent[] => [])
   )
 
-  const dates = clockingEvents.filter((date) => date.getFullYear() === year)
-
-  dates.forEach((date) => {
-    days[date.getMonth()][date.getDate() - 1].push(date)
-  })
+  clockingEvents
+    .filter(({ date }) => date.getFullYear() === year)
+    .forEach((event) => {
+      days[event.date.getMonth()][event.date.getDate() - 1].push(event)
+    })
 
   return days.map((month) => {
-    return month.map((day, index) => {
-      const timestamps = day
-        .map((date) => date.toLocaleTimeString('en-GB'))
-        .join('  ')
-
+    return month.map((events, index) => {
       return {
-        timestamps,
-        totalHours: timeSpent(day),
-        day: index + 1
+        totalHours: timeSpent(events.map(({ date }) => date)),
+        day: index + 1,
+        events
       }
     })
   })
